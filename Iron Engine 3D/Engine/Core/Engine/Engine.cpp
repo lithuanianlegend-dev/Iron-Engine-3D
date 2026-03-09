@@ -1,19 +1,23 @@
 #include "Engine.h"
 #include <iostream>
 
-#include "../Engine/Systems/RenderSystem.h"
-#include "../Engine/Systems/TransformSystem.h"
+#include "../Engine/Systems/RenderSystem/RenderSystem.h"
+#include "../Engine/Systems/TransformSystem/TransformSystem.h"
 
-
+#include "../Engine/Core/Input/Mouse.h"
 
 namespace IronEngine
 {
 
 	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	{
+		WindowState* state = static_cast<WindowState*>(glfwGetWindowUserPointer(window));
+		if (!state || !state->engine) return;
+
+		Engine* engine = state->engine;
+
 		glViewport(0, 0, width, height);
 
-		Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
 		if (engine) {
 			engine->SetWidth(width);
 			engine->SetHeight(height);
@@ -38,6 +42,7 @@ namespace IronEngine
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_SAMPLES, 2);
 
 		auto& monitor = *glfwGetVideoMode(glfwGetPrimaryMonitor());
 
@@ -53,9 +58,6 @@ namespace IronEngine
 			return;
 		}
 
-		glfwSetWindowUserPointer(m_window, this);
-		glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
-
 		glfwMakeContextCurrent(m_window);
 
 
@@ -65,13 +67,30 @@ namespace IronEngine
 			return;
 		}
 
+		glEnable(GL_DEPTH_TEST);
+
 		glfwSwapInterval(1);
+	}
+
+	void Engine::SetCamera(entt::entity m_camera)
+	{
+
+		WindowState* state = new WindowState();
+		state->registry = &registry;
+		state->cameraEntity = m_camera;
+		state->engine = this;
+
+		glfwSetWindowUserPointer(m_window, state);
+		glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
+		glfwSetCursorPosCallback(m_window, Mouse::mouse_callback);
+		glfwSetScrollCallback(m_window, Mouse::scroll_callback);
+
 	}
 
 	void Engine::Update()
 	{
-		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		TransformSystem::Update(registry);
 	}
 

@@ -20,7 +20,7 @@ namespace IronEngine
 			return reference;
 		}
 
-		void Poll(GLFWwindow* window);
+		void Poll(GLFWwindow* window, entt::registry& registry, entt::entity camera);
 		
 	private:
 		InputHandler();

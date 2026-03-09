@@ -21,6 +21,7 @@ namespace IronEngine
 		}
 
 		void InitializeEngine(int width, int height, const char* title);
+		void SetCamera(entt::entity m_camera);
 		void RefreshEngine();
 		void DestroyEngine();
 

@@ -9,8 +9,9 @@ namespace IronEngine
 
 	void T_Time::Tick()
 	{
-		deltaTime = glfwGetTime() - lastFrame;
-		lastFrame = glfwGetTime();
+		float curTime = glfwGetTime();
+		deltaTime = curTime - lastFrame;
+		lastFrame = curTime;
 	}
 
 	void T_Time::MeasureFrameTime(GLFWwindow* window)

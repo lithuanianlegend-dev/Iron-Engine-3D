@@ -17,24 +17,26 @@
 
 int main()
 {
+	Scene scene;
+
 	IronEngine::Core.InitializeEngine(1200, 800, "Iron Engine 3D");
 
-
 	auto& registry = IronEngine::Core.GetRegistry();
-	Scene scene;
 	scene.Init(registry);
 
+	IronEngine::Core.SetCamera(scene.GetCamera());
 
 	while (IronEngine::Core.IsRunning())
 	{
-		scene.Update(registry);
+		IronEngine::Input.Poll(&IronEngine::Core.GetWindow(), IronEngine::Core.GetRegistry(), scene.GetCamera());
+		IronEngine::EventHandler.PollEvents();
 
 		IronEngine::Core.Update();
+
+		scene.Update(registry);
+
 		IronEngine::Core.Render();
 
-		IronEngine::Input.Poll(&IronEngine::Core.GetWindow());
-
-		IronEngine::EventHandler.PollEvents();
 
 		IronEngine::Time.Tick();
 		IronEngine::Time.MeasureFrameTime(&IronEngine::Core.GetWindow());
